@@ -20,7 +20,7 @@
 # APP
 #--------------------------------------------------------------------
 
-# app.baseURL = ''
+app.baseURL = 'http://localhost:8081/'
 # If you have trouble with `.`, you could also use `_`.
 # app_baseURL = ''
 # app.forceGlobalSecureRequests = false
@@ -30,11 +30,18 @@
 # DATABASE
 #--------------------------------------------------------------------
 
-# database.default.hostname = localhost
-# database.default.database = ci4
+# Original database settings (commented out)
+# database.default.DBDriver = SQLite3
+# database.default.database = /path/to/your/database/sea_catering.db
+
+# Database settings specifically for "write" operations
+database.default.DBDriver = SQLite3
+database.default.database = writable/sea_catering.db # Updated: Path now points directly inside the 'writable' folder relative to the root project.
+
+# The following are not applicable for SQLite and are commented out or removed
+# database.default.hostname = 127.0.0.1
 # database.default.username = root
-# database.default.password = root
-# database.default.DBDriver = MySQLi
+# database.default.password =
 # database.default.DBPrefix =
 # database.default.port = 3306
 

@@ -2,8 +2,22 @@
 
 namespace App\Controllers;
 
+// Import model yang akan digunakan
+use App\Models\MealPlanModel;
+use App\Models\TestimonialModel;
+
 class Pages extends BaseController
 {
+    protected $mealPlanModel;
+    protected $testimonialModel;
+
+    public function __construct()
+    {
+        // Inisialisasi model di constructor agar bisa digunakan di semua method
+        $this->mealPlanModel = new MealPlanModel();
+        $this->testimonialModel = new TestimonialModel();
+    }
+
     /**
      * Menampilkan halaman utama (Homepage).
      */
@@ -11,29 +25,10 @@ class Pages extends BaseController
     {
         $data = [
             'title' => 'Welcome to SEA Catering!',
-            'activePage' => 'home', // Untuk menandai halaman aktif di navigasi
-            'session' => session()
-        ];
-        // Data testimoni sampel dengan gambar avatar
-        $data['testimonials'] = [
-            [
-                'name' => 'Alif Nurhidayat',
-                'review' => 'Makanannya enak dan sehat! Pengiriman selalu tepat waktu. Sangat direkomendasikan.',
-                'rating' => 5,
-                'avatar' => 'https://i.pravatar.cc/150?u=alif'
-            ],
-            [
-                'name' => 'Citra Lestari',
-                'review' => 'Suka sekali dengan variasi menunya. Tidak pernah bosan dan nutrisinya seimbang.',
-                'rating' => 5,
-                'avatar' => 'https://i.pravatar.cc/150?u=citra'
-            ],
-            [
-                'name' => 'Budi Santoso',
-                'review' => 'Layanan pelanggan sangat responsif. Membantu saya mengatur paket langganan dengan mudah.',
-                'rating' => 4,
-                'avatar' => 'https://i.pravatar.cc/150?u=budi'
-            ]
+            'activePage' => 'home',
+            'session' => session(),
+            // Ambil semua data testimoni dari database
+            'testimonials' => $this->testimonialModel->findAll()
         ];
         return view('pages/home', $data);
     }
@@ -45,37 +40,16 @@ class Pages extends BaseController
     {
         $data = [
             'title' => 'Menu & Meal Plans',
-            'activePage' => 'menu'
-        ];
-        // Data paket makanan (meal plans) dengan gambar yang lebih sesuai
-        $data['mealPlans'] = [
-            [
-                'name' => 'Diet Plan',
-                'price' => 'Rp30.000',
-                'description' => 'Paket hemat untuk Anda yang ingin menjaga kalori dengan menu lezat dan seimbang setiap hari.',
-                'image' => 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=1280&auto=format&fit=crop',
-                'details' => 'Cocok untuk program penurunan berat badan. Menu dirancang oleh ahli gizi untuk memastikan asupan kalori terkontrol tanpa mengurangi rasa.'
-            ],
-            [
-                'name' => 'Protein Plan',
-                'price' => 'Rp40.000',
-                'description' => 'Tingkatkan asupan protein Anda untuk mendukung program pembentukan otot dan gaya hidup aktif.',
-                'image' => 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=1280&auto=format&fit=crop',
-                'details' => 'Didesain khusus untuk para pegiat fitness. Mengandung protein tinggi dari sumber berkualitas seperti dada ayam, ikan salmon, dan telur.'
-            ],
-            [
-                'name' => 'Royal Plan',
-                'price' => 'Rp60.000',
-                'description' => 'Nikmati hidangan premium dengan bahan-bahan organik pilihan untuk pengalaman kuliner terbaik.',
-                'image' => 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?q=80&w=1280&auto=format&fit=crop',
-                'details' => 'Paket eksklusif dengan bahan-bahan premium seperti daging sapi wagyu, sayuran organik, dan bahan impor lainnya. Manjakan diri Anda dengan kemewahan rasa dan nutrisi.'
-            ]
+            'activePage' => 'menu',
+            // Ambil semua data meal plan dari database
+            'mealPlans' => $this->mealPlanModel->findAll()
         ];
         return view('pages/menu', $data);
     }
 
     /**
      * Menampilkan halaman Subscription (placeholder).
+     * Akan kita kembangkan di langkah selanjutnya.
      */
     public function subscription()
     {
@@ -105,12 +79,34 @@ class Pages extends BaseController
     }
 
     /**
-     * Menangani pengiriman data dari formulir testimoni.
+     * Menangani pengiriman data dari formulir testimoni dan menyimpannya ke database.
      */
     public function addTestimonial()
     {
-        $name = $this->request->getPost('customer_name');
-        session()->setFlashdata('success_message', 'Terima kasih, '.esc($name).'! Testimoni Anda telah kami terima.');
-        return redirect()->to(base_url('/'));
+        // Validasi input sederhana
+        if (!$this->validate([
+            'customer_name' => 'required|min_length[3]|max_length[100]',
+            'review_message' => 'required|min_length[10]',
+            'rating' => 'required|numeric|greater_than[0]|less_than[6]'
+        ])) {
+            // Jika validasi gagal, kembalikan ke halaman utama dengan pesan error
+            session()->setFlashdata('error_message', 'Gagal menambahkan testimoni. Mohon periksa kembali input Anda.');
+            return redirect()->to(base_url('/#testimonials'));
+        }
+
+        // Simpan data ke database melalui model
+        $this->testimonialModel->save([
+            'customer_name' => $this->request->getPost('customer_name'),
+            'review_message' => $this->request->getPost('review_message'),
+            'rating' => $this->request->getPost('rating'),
+            // Membuat URL avatar acak untuk contoh
+            'avatar' => 'https://i.pravatar.cc/150?u=' . url_title($this->request->getPost('customer_name'), '-', true)
+        ]);
+        
+        // Mengatur flashdata untuk menampilkan pesan sukses
+        session()->setFlashdata('success_message', 'Terima kasih, '.esc($this->request->getPost('customer_name')).'! Testimoni Anda telah kami simpan.');
+
+        // Mengarahkan pengguna kembali ke halaman utama
+        return redirect()->to(base_url('/#testimonials'));
     }
 }
