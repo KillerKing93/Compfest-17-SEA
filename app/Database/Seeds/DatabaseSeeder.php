@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             // 'ProductSeeder',
             'MealPlanSeeder',
             'TestimonialSeeder',
+            'AdminUserSeeder',
         ];
 
         foreach ($seeders as $seeder) {
