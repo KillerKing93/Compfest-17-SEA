@@ -12,7 +12,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
-        /* Style untuk transisi smooth */
         [x-cloak] { display: none !important; }
         .nav-link-active {
             color: #0d9488; /* teal-600 */
@@ -30,11 +29,24 @@
                 <a href="<?= base_url('/') ?>" class="text-2xl font-bold text-teal-600">SEA Catering</a>
 
                 <!-- Desktop Menu -->
-                <div class="hidden md:flex space-x-6 items-center">
-                    <a href="<?= base_url('/') ?>" class="py-2 px-2 text-gray-600 hover:text-teal-600 transition duration-300 <?= ($activePage === 'home') ? 'nav-link-active' : '' ?>">Home</a>
-                    <a href="<?= base_url('menu') ?>" class="py-2 px-2 text-gray-600 hover:text-teal-600 transition duration-300 <?= ($activePage === 'menu') ? 'nav-link-active' : '' ?>">Menu</a>
-                    <a href="<?= base_url('subscription') ?>" class="py-2 px-2 text-gray-600 hover:text-teal-600 transition duration-300 <?= ($activePage === 'subscription') ? 'nav-link-active' : '' ?>">Subscription</a>
-                    <a href="<?= base_url('contact') ?>" class="py-2 px-2 text-gray-600 hover:text-teal-600 transition duration-300 <?= ($activePage === 'contact') ? 'nav-link-active' : '' ?>">Contact Us</a>
+                <div class="hidden md:flex items-center">
+                    <div class="space-x-6">
+                        <a href="<?= base_url('/') ?>" class="py-2 px-2 text-gray-600 hover:text-teal-600 transition duration-300 <?= ($activePage === 'home') ? 'nav-link-active' : '' ?>">Home</a>
+                        <a href="<?= base_url('menu') ?>" class="py-2 px-2 text-gray-600 hover:text-teal-600 transition duration-300 <?= ($activePage === 'menu') ? 'nav-link-active' : '' ?>">Menu</a>
+                        <a href="<?= base_url('subscription') ?>" class="py-2 px-2 text-gray-600 hover:text-teal-600 transition duration-300 <?= ($activePage === 'subscription') ? 'nav-link-active' : '' ?>">Subscription</a>
+                        <a href="<?= base_url('contact') ?>" class="py-2 px-2 text-gray-600 hover:text-teal-600 transition duration-300 <?= ($activePage === 'contact') ? 'nav-link-active' : '' ?>">Contact Us</a>
+                    </div>
+                    
+                    <!-- Auth Buttons -->
+                    <div class="flex items-center space-x-2 ml-6 border-l pl-6">
+                        <?php if (session()->get('isLoggedIn')): ?>
+                            <span class="text-gray-700">Halo, <?= esc(explode(' ', session()->get('fullName'))[0]) ?>!</span>
+                            <a href="<?= base_url('logout') ?>" class="bg-red-500 text-white text-sm py-2 px-4 rounded-md hover:bg-red-600 transition duration-300">Logout</a>
+                        <?php else: ?>
+                            <a href="<?= base_url('login') ?>" class="text-gray-600 hover:text-teal-600 transition duration-300">Login</a>
+                            <a href="<?= base_url('register') ?>" class="bg-teal-600 text-white text-sm py-2 px-4 rounded-md hover:bg-teal-700 transition duration-300">Register</a>
+                        <?php endif; ?>
+                    </div>
                 </div>
 
                 <!-- Mobile Menu Button -->
@@ -49,18 +61,22 @@
             </div>
             
             <!-- Mobile Menu -->
-            <div x-show="isMobileMenuOpen" x-cloak 
-                 x-transition:enter="transition ease-out duration-300"
-                 x-transition:enter-start="opacity-0 transform -translate-y-4"
-                 x-transition:enter-end="opacity-100 transform translate-y-0"
-                 x-transition:leave="transition ease-in duration-200"
-                 x-transition:leave-start="opacity-100 transform translate-y-0"
-                 x-transition:leave-end="opacity-0 transform -translate-y-4"
-                 class="md:hidden mt-4">
+            <div x-show="isMobileMenuOpen" x-cloak class="md:hidden mt-4 border-t pt-4">
                 <a href="<?= base_url('/') ?>" class="block py-2 px-4 text-sm hover:bg-teal-50 rounded <?= ($activePage === 'home') ? 'font-semibold text-teal-600' : '' ?>">Home</a>
                 <a href="<?= base_url('menu') ?>" class="block py-2 px-4 text-sm hover:bg-teal-50 rounded <?= ($activePage === 'menu') ? 'font-semibold text-teal-600' : '' ?>">Menu</a>
                 <a href="<?= base_url('subscription') ?>" class="block py-2 px-4 text-sm hover:bg-teal-50 rounded <?= ($activePage === 'subscription') ? 'font-semibold text-teal-600' : '' ?>">Subscription</a>
                 <a href="<?= base_url('contact') ?>" class="block py-2 px-4 text-sm hover:bg-teal-50 rounded <?= ($activePage === 'contact') ? 'font-semibold text-teal-600' : '' ?>">Contact Us</a>
+                <div class="mt-4 pt-4 border-t">
+                    <?php if (session()->get('isLoggedIn')): ?>
+                        <div class="px-4 py-2">
+                            <p class="text-sm text-gray-700">Halo, <?= esc(explode(' ', session()->get('fullName'))[0]) ?>!</p>
+                            <a href="<?= base_url('logout') ?>" class="mt-2 w-full text-center block bg-red-500 text-white text-sm py-2 px-4 rounded-md hover:bg-red-600 transition duration-300">Logout</a>
+                        </div>
+                    <?php else: ?>
+                        <a href="<?= base_url('login') ?>" class="block py-2 px-4 text-sm hover:bg-teal-50 rounded">Login</a>
+                        <a href="<?= base_url('register') ?>" class="mt-2 w-full text-center block bg-teal-600 text-white text-sm py-2 px-4 rounded-md hover:bg-teal-700 transition duration-300">Register</a>
+                    <?php endif; ?>
+                </div>
             </div>
         </div>
     </nav>
