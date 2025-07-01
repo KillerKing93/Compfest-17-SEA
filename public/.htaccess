@@ -7,6 +7,9 @@ Options -Indexes
 
 RewriteEngine On
 
+# Redirect /index.php or /index.php/ to root
+RewriteRule ^index\.php/?$ / [L,R=301]
+
 # If the requested filename exists, and is not a directory, skip the next rules
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
