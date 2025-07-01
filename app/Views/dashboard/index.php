@@ -6,6 +6,11 @@
     <header class="mb-12">
         <h1 class="text-4xl md:text-5xl font-bold text-teal-600">User Dashboard</h1>
         <p class="text-lg text-gray-600 mt-2">Kelola langganan makanan sehat Anda di sini.</p>
+        <div class="mt-6">
+            <a href="<?= base_url('subscription') ?>" class="inline-block bg-teal-600 text-white font-semibold py-2 px-6 rounded-lg shadow hover:bg-teal-700 transition duration-300">
+                + Buat Langganan Baru
+            </a>
+        </div>
     </header>
 
     <!-- Menampilkan pesan sukses atau error -->
